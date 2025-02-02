@@ -1,9 +1,19 @@
 "use server";
 
+import { Document, WithId } from 'mongodb';
 import { coreDB } from "./db";
 
+interface Account {
+  accountId: string;
+  username?: string;
+  dcId?: string;
+  prefix: string;
+  parentAccountId?: string;
+  [key: string]: any;
+}
+
 const getAccountsCollection = async () => {
-  return (await coreDB()).collection("accounts");
+  return (await coreDB()).collection<Account>("accounts");
 };
 
 export async function checkExistingAccounts(
@@ -17,6 +27,11 @@ export async function checkExistingAccounts(
     .toArray();
 
   return existingAccounts.map((account) => account.accountId);
+}
+
+export async function getAccountsByPrefix(prefix: string): Promise<Account[]> {
+  const accountsCollection = await getAccountsCollection();
+  return accountsCollection.find({ prefix }).toArray();
 }
 
 export async function createAccounts(accounts: string[], prefix: string) {
@@ -45,8 +60,8 @@ export async function createAccounts(accounts: string[], prefix: string) {
 
 export async function getAccountById(accountId: string) {
   const accountsCollection = await getAccountsCollection();
-  
+
   const account = await accountsCollection.findOne({ accountId });
-  
+
   return account;
 }

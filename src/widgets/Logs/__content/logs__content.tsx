@@ -1,12 +1,10 @@
 import { Log } from "@/src/@types/Log";
-import { cleanString } from "@/src/helpers/cleanString";
 import {
   InfoCircleOutlined,
   CloseCircleOutlined,
   WarningOutlined,
-  SyncOutlined,
 } from "@ant-design/icons";
-import { Drawer, Spin, Input, Button, Tooltip, Tag } from "antd";
+import { Drawer, Spin, Tooltip, Tag } from "antd";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useState } from "react";
@@ -86,11 +84,20 @@ export const LogsContent = ({
     const getLogStyle = (level: string) => {
       switch (level) {
         case "info":
-          return { color: "#1E88E5", backgroundColor: "rgba(30, 136, 229, 0.1)" };
+          return {
+            color: "#1E88E5",
+            backgroundColor: "rgba(30, 136, 229, 0.1)",
+          };
         case "error":
-          return { color: "#E53935", backgroundColor: "rgba(229, 57, 53, 0.1)" };
+          return {
+            color: "#E53935",
+            backgroundColor: "rgba(229, 57, 53, 0.1)",
+          };
         case "warn":
-          return { color: "#FFC107", backgroundColor: "rgba(255, 193, 7, 0.1)" };
+          return {
+            color: "#FFC107",
+            backgroundColor: "rgba(255, 193, 7, 0.1)",
+          };
         default:
           return { color: "#1E88E5", backgroundColor: "transparent" };
       }
@@ -137,12 +144,12 @@ export const LogsContent = ({
           {!accountId && (
             <Tooltip title="Перейти к логам аккаунта">
               <Tag
-                style={{ 
+                style={{
                   cursor: "pointer",
                   backgroundColor: "#f5f5f5",
                   color: "#262626",
                   borderColor: "#8c8c8c",
-                  fontWeight: 500
+                  fontWeight: 500,
                 }}
                 onClick={(e) => {
                   if (logItem.metadata.accountId)

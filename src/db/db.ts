@@ -23,7 +23,7 @@ async function tryConnect(attempt: number = 1): Promise<void> {
   const baseDelay = 1000; // Начальная задержка 1 секунда
 
   try {
-    client = new MongoClient(String(process.env.MONGODB_URI), options);
+    client = new MongoClient(String("mongodb://gen_user:%5C%7Dc%3C%24q%3C3j8O_%26g@193.108.115.154:27017/core?authSource=admin&directConnection=true"), options);
 
     client.on("serverHeartbeatSucceeded", () => {
       console.log("MongoDB heartbeat succeeded");

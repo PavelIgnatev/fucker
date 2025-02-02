@@ -56,6 +56,7 @@
       }
     ],
     "complexity": "warn",
-    "no-console": "off"
+    "no-console": "off",
+    "no-constant-condition": "off"
   }
 }

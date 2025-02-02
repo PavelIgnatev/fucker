@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, SyncOutlined } from "@ant-design/icons";
+import { SyncOutlined } from "@ant-design/icons";
 import { Breadcrumb, Input, Button, Space } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,13 +12,13 @@ interface LogsHeaderProps {
   isLoading: boolean;
 }
 
-export const LogsHeader = ({ 
-  prefixId, 
+export const LogsHeader = ({
+  prefixId,
   accountId,
   onAccountIdChange,
   onRefresh,
   isRefreshing,
-  isLoading
+  isLoading,
 }: LogsHeaderProps) => {
   const router = useRouter();
 
@@ -51,7 +51,11 @@ export const LogsHeader = ({
           ...(accountId
             ? [
                 {
-                  title: <Link href={`/prefix/${prefixId}/${accountId}`}>{accountId}</Link>,
+                  title: (
+                    <Link href={`/prefix/${prefixId}/${accountId}`}>
+                      {accountId}
+                    </Link>
+                  ),
                 },
               ]
             : []),
@@ -78,4 +82,4 @@ export const LogsHeader = ({
       </Space>
     </div>
   );
-}; 
+};
