@@ -157,6 +157,19 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
         >
           {status.text}
         </span>
+        {(account.banned || account.reason) && (
+          <span
+            style={{
+              fontSize: "10px",
+              color: "#ff4d4f",
+              backgroundColor: "#ff4d4f10",
+              padding: "2px 6px",
+              borderRadius: "4px",
+            }}
+          >
+            {account.reason || "Причина не указана"}
+          </span>
+        )}
       </div>
     );
   };

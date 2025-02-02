@@ -1,6 +1,5 @@
 "use server";
 
-import { Document, WithId } from 'mongodb';
 import { coreDB } from "./db";
 
 interface Account {
