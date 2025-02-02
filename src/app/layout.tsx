@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { ToastContainer } from "react-toastify";
 
 import Provider from "./providers";
 
-import "react-toastify/dist/ReactToastify.css";
 import "@/public/css/normalize.css";
 
 export const metadata: Metadata = {
-  title: "Logger",
+  title: "Fucker",
+  icons: {
+    icon: [
+      {
+        url: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥷🏻</text></svg>",
+        type: "image/svg+xml",
+      },
+    ],
+  },
 };
 
 const RootLayout = (
@@ -20,10 +26,7 @@ const RootLayout = (
   return (
     <html lang="en" suppressHydrationWarning>
       <Provider>
-        <body>
-          {children}
-          <ToastContainer />
-        </body>
+        <body suppressHydrationWarning>{children}</body>
       </Provider>
     </html>
   );

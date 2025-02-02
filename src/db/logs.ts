@@ -3,37 +3,60 @@
 "use server";
 import { ObjectId } from "mongodb";
 
-import { Log } from "../@types/types";
+import { Log } from "@/src/@types/Log";
 
-import { DB } from "./db";
+import { logsDB } from "./db";
+import { getAccountById } from "./accounts";
+import { cleanString } from "../helpers/cleanString";
 
 const getLogsCollection = async () => {
-  return (await DB()).collection("fucker");
+  return (await logsDB()).collection("logs");
+};
+
+export const getUniquePrefixes = async () => {
+  const logsCollection = await getLogsCollection();
+
+  const prefixes = await logsCollection.distinct("metadata.prefix");
+  return prefixes;
 };
 
 export const getLogs = async (
   skip = 0,
   limit = 100,
-  withAccountId: boolean,
-  levels?: string[], // Изменено на массив
-  accountId?: string // Новый параметр для accountId
+  prefix?: string,
+  accountId?: string
 ) => {
   const logsCollection = await getLogsCollection();
 
   const query: any = {};
 
-  if (withAccountId) {
-    if (accountId && accountId.trim() !== "") {
-      query["metadata.accountId"] = accountId.trim();
-    } else {
-      query["metadata.accountId"] = { $exists: true, $ne: null };
-    }
-  } else {
-    query["metadata.accountId"] = { $exists: false };
+  if (prefix) {
+    query["metadata.prefix"] = prefix;
   }
 
-  if (levels && levels.length > 0) {
-    query.level = { $in: levels };
+  if (accountId && accountId.trim() !== "") {
+    const trimmedAccountId = cleanString(accountId);
+    const account = await getAccountById(trimmedAccountId);
+
+    if (trimmedAccountId.length === 32) {
+      if (account?.id) {
+        query["metadata.accountId"] = {
+          $in: [trimmedAccountId, account.id],
+        };
+      } else {
+        query["metadata.accountId"] = trimmedAccountId;
+      }
+    } else {
+      if (account?.parentAccountId) {
+        query["metadata.accountId"] = {
+          $in: [trimmedAccountId, account.parentAccountId],
+        };
+      } else {
+        query["metadata.accountId"] = trimmedAccountId;
+      }
+    }
+  } else {
+    query["metadata.accountId"] = { $exists: true, $ne: null };
   }
 
   const logs =
@@ -44,9 +67,10 @@ export const getLogs = async (
           level: 1,
           message: 1,
           "metadata.accountId": 1,
+          "metadata.prefix": 1,
         },
       })
-      ?.sort({ timestamp: -1 }) // Сортировка по дате в убывающем порядке
+      ?.sort({ timestamp: -1 })
       ?.skip(skip)
       ?.limit(limit)
       ?.toArray()) || [];
