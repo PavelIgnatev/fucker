@@ -8,6 +8,8 @@ interface Account {
   dcId?: string;
   prefix: string;
   parentAccountId?: string;
+  prevApiId?: string;
+  nextApiId?: string;
   [key: string]: any;
 }
 
@@ -60,7 +62,19 @@ export async function createAccounts(accounts: string[], prefix: string) {
 export async function getAccountById(accountId: string) {
   const accountsCollection = await getAccountsCollection();
 
-  const account = await accountsCollection.findOne({ accountId });
+  const account = await accountsCollection.findOne({ 
+    accountId,
+  }, {
+    projection: {
+      accountId: 1,
+      username: 1,
+      dcId: 1,
+      prefix: 1,
+      parentAccountId: 1,
+      prevApiId: 1,
+      nextApiId: 1
+    }
+  });
 
   return account;
 }

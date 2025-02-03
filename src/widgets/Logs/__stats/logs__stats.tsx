@@ -19,6 +19,8 @@ interface Account {
   reason?: string;
   banned?: boolean;
   stable?: boolean;
+  prevApiId?: string;
+  nextApiId?: string;
   [key: string]: any;
 }
 
@@ -168,6 +170,32 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
             }}
           >
             {account.reason || "Причина не указана"}
+          </span>
+        )}
+        {account.prevApiId && (
+          <span
+            style={{
+              fontSize: "10px",
+              color: "#ff4d4f",
+              backgroundColor: "#ff4d4f10",
+              padding: "2px 6px",
+              borderRadius: "4px",
+            }}
+          >
+            {account.prevApiId}
+          </span>
+        )}
+        {account.nextApiId && (
+          <span
+            style={{
+              fontSize: "10px",
+              color: "#52c41a",
+              backgroundColor: "#52c41a10",
+              padding: "2px 6px",
+              borderRadius: "4px",
+            }}
+          >
+            {account.nextApiId}
           </span>
         )}
       </div>
