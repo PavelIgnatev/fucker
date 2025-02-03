@@ -21,6 +21,7 @@ interface Account {
   stable?: boolean;
   prevApiId?: string;
   nextApiId?: string;
+  phone?: string;
   [key: string]: any;
 }
 
@@ -148,6 +149,18 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
             {account.accountId}
           </Tag>
         </Tooltip>
+        {account.phone && (
+          <Tag
+            style={{
+              backgroundColor: "#f5f5f5",
+              color: "#595959",
+              borderColor: "#d9d9d9",
+              fontSize: "10px",
+            }}
+          >
+            {account.phone}
+          </Tag>
+        )}
         <span
           style={{
             fontSize: "10px",

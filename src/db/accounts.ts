@@ -10,6 +10,7 @@ interface Account {
   parentAccountId?: string;
   prevApiId?: string;
   nextApiId?: string;
+  phone?: string;
   [key: string]: any;
 }
 
@@ -32,7 +33,23 @@ export async function checkExistingAccounts(
 
 export async function getAccountsByPrefix(prefix: string): Promise<Account[]> {
   const accountsCollection = await getAccountsCollection();
-  return accountsCollection.find({ prefix }).toArray();
+  return accountsCollection.find({ prefix }, {
+    projection: {
+      accountId: 1,
+      username: 1,
+      dcId: 1,
+      prefix: 1,
+      parentAccountId: 1,
+      prevApiId: 1,
+      nextApiId: 1,
+      phone: 1,
+      workedOut: 1,
+      error: 1,
+      reason: 1,
+      banned: 1,
+      stable: 1
+    }
+  }).toArray();
 }
 
 export async function createAccounts(accounts: string[], prefix: string) {
