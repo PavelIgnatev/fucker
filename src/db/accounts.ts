@@ -95,3 +95,25 @@ export async function getAccountById(accountId: string) {
 
   return account;
 }
+
+export async function getAllAccountsByPrefixes(prefixes: string[]): Promise<Account[]> {
+  const accountsCollection = await getAccountsCollection();
+  const accounts = await accountsCollection.find(
+    { prefix: { $in: prefixes } },
+    {
+      projection: {
+        _id: 0,
+        accountId: 1,
+        prefix: 1,
+        parentAccountId: 1,
+        workedOut: 1,
+        error: 1,
+        reason: 1,
+        banned: 1,
+        stable: 1
+      }
+    }
+  ).toArray();
+  
+  return accounts;
+}

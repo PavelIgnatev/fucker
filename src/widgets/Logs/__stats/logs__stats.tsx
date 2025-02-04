@@ -112,10 +112,11 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
   ).length;
 
   // Статистика производных аккаунтов
-  const derivedActiveCount = derivedAccounts.filter(
-    (acc) => !acc.banned && !acc.reason && !acc.stable
+  const checkingAccounts = derivedAccounts.filter(acc => !acc.stable);
+  const derivedActiveCount = checkingAccounts.filter(
+    (acc) => !acc.banned && !acc.reason
   ).length;
-  const derivedBannedCount = derivedAccounts.filter(
+  const derivedBannedCount = checkingAccounts.filter(
     (acc) => acc.banned || acc.reason
   ).length;
   const stableCount = derivedAccounts.filter((acc) => acc.stable).length;
@@ -251,19 +252,16 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
           </div>
         </div>
 
-
         <div style={{ marginBottom: "24px" }}>
-          <h4>АККАУНТЫ НА ПРОВЕРКЕ: {derivedAccounts.length}</h4>
+          <h4>АККАУНТЫ НА ПРОВЕРКЕ: {checkingAccounts.length}</h4>
           <div style={{ fontSize: "12px", marginBottom: "8px" }}>
             <div style={{ color: "#1677ff" }}>Активные: {derivedActiveCount}</div>
             <div style={{ color: "#ff4d4f" }}>Забанено: {derivedBannedCount}</div>
           </div>
           <div style={{ fontSize: "12px", color: "#666" }}>
-            {derivedAccounts
-              .filter((acc) => !acc.stable)
-              .map((acc) => (
-                <AccountItem key={acc.accountId} account={acc} />
-              ))}
+            {checkingAccounts.map((acc) => (
+              <AccountItem key={acc.accountId} account={acc} />
+            ))}
           </div>
         </div>
 
