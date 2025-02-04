@@ -8,6 +8,7 @@ import {
   Col,
   Progress,
   Pagination,
+  Statistic,
 } from "antd";
 import Link from "next/link";
 import {
@@ -168,6 +169,28 @@ export const PrefixList = ({
     fetchStats();
   }, [currentPrefixes, currentPage]);
 
+  // Добавляем вычисление глобальной статистики
+  const globalStats = useMemo(() => {
+    const stats = Object.values(prefixStats);
+    if (stats.length === 0) return null;
+
+    const totalInitialAccounts = stats.reduce((sum, stat) => sum + stat.total, 0);
+    const totalStableActive = stats.reduce(
+      (sum, stat) => sum + stat.derived.stable.active,
+      0
+    );
+
+    const successRate = totalInitialAccounts > 0
+      ? (totalStableActive / totalInitialAccounts) * 100
+      : 0;
+
+    return {
+      totalInitialAccounts,
+      totalStableActive,
+      successRate: Math.round(successRate * 100) / 100,
+    };
+  }, [prefixStats]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setPrefixStats({});
@@ -226,7 +249,7 @@ export const PrefixList = ({
               </Text>
             </div>
             {prefixStats[prefix.prefix] && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '700px'}}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '730px'}}>
                 <div style={{ padding: "0 24px", border: "1px solid #f0f0f0", borderRadius: "8px", backgroundColor: "#fafafa", marginTop: '-40px' }}>
                   <Row gutter={[64, 16]} style={{ padding: "8px 0" }}>
                     <Col span={8}>
@@ -285,7 +308,15 @@ export const PrefixList = ({
                       <div style={{ marginBottom: "8px" }}>
                         <Space>
                           <CheckCircleOutlined style={{ color: "#52c41a" }} />
-                          <span style={{ fontWeight: 500 }}>Стабильные ({prefixStats[prefix.prefix].derived.stable.total})</span>
+                          <Space size={4}>
+                            <span style={{ fontWeight: 500 }}>Стабильные ({prefixStats[prefix.prefix].derived.stable.total})</span>
+                            <Text type="success">
+                              {prefixStats[prefix.prefix].total > 0 
+                                ? `${Math.round((prefixStats[prefix.prefix].derived.stable.active / prefixStats[prefix.prefix].total) * 100)}%`
+                                : '0%'
+                              }
+                            </Text>
+                          </Space>
                         </Space>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -330,9 +361,31 @@ export const PrefixList = ({
               alignItems: "center",
               borderBottom: "1px solid #f0f0f0"
             }}>
-              <Title level={4} style={{ margin: 0 }}>
-                Префиксы
-              </Title>
+              <Space direction="vertical" size="small">
+                <Title level={4} style={{ margin: 0 }}>
+                  Префиксы
+                </Title>
+                {globalStats && (
+                  <Space size="large">
+                    <Statistic
+                      title="Всего аккаунтов на релогине"
+                      value={globalStats.totalInitialAccounts}
+                      style={{ marginRight: 32 }}
+                    />
+                    <Statistic
+                      title="Вышло стабильных активных"
+                      value={globalStats.totalStableActive}
+                      style={{ marginRight: 32 }}
+                    />
+                    <Statistic
+                      title="Процент успешности"
+                      value={globalStats.successRate}
+                      suffix="%"
+                      valueStyle={{ color: '#52c41a' }}
+                    />
+                  </Space>
+                )}
+              </Space>
               <Button type="primary" icon={<PlusOutlined />} onClick={onAddClick}>
                 Добавить префикс
               </Button>
