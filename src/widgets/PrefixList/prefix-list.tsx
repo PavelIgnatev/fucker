@@ -4,9 +4,6 @@ import {
   Typography,
   Button,
   Space,
-  Tooltip,
-  Tag,
-  Statistic,
   Row,
   Col,
   Progress,
@@ -17,7 +14,6 @@ import {
   PlusOutlined,
   CheckCircleOutlined,
   SyncOutlined,
-  CloseCircleOutlined,
   WarningOutlined,
 } from "@ant-design/icons";
 import type { Prefix } from "@/src/@types/Prefix";
@@ -267,7 +263,7 @@ export const PrefixList = ({
                       <div style={{ marginBottom: "8px" }}>
                         <Space>
                           <SyncOutlined spin style={{ color: "#722ed1" }} />
-                          <span style={{ fontWeight: 500 }}>На проверке ({prefixStats[prefix.prefix].derived.total})</span>
+                          <span style={{ fontWeight: 500 }}>На проверке ({prefixStats[prefix.prefix].derived.active})</span>
                         </Space>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
