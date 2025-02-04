@@ -226,9 +226,9 @@ export const PrefixList = ({
               </Text>
             </div>
             {prefixStats[prefix.prefix] && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '700px'}}>
                 <div style={{ padding: "0 24px", border: "1px solid #f0f0f0", borderRadius: "8px", backgroundColor: "#fafafa", marginTop: '-40px' }}>
-                  <Row gutter={[24, 16]} style={{ padding: "16px 0" }}>
+                  <Row gutter={[64, 16]} style={{ padding: "8px 0" }}>
                     <Col span={8}>
                       <div style={{ marginBottom: "8px" }}>
                         <Space>
