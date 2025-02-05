@@ -9,17 +9,21 @@ import {
   Progress,
   Pagination,
   Statistic,
+  Input,
 } from "antd";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   PlusOutlined,
   CheckCircleOutlined,
   SyncOutlined,
   WarningOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import type { Prefix } from "@/src/@types/Prefix";
 import { getAllAccountsByPrefixes } from "@/src/db/accounts";
 import { useEffect, useState, useMemo } from "react";
+import { message } from "antd";
 
 const { Text, Title } = Typography;
 
@@ -76,11 +80,14 @@ export const PrefixList = ({
   isLoading,
   onAddClick,
 }: PrefixListProps) => {
+  const router = useRouter();
   const [prefixStats, setPrefixStats] = useState<Record<string, PrefixStats>>(
     {}
   );
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // Получаем текущую страницу префиксов
   const currentPrefixes = useMemo(() => {
@@ -194,6 +201,28 @@ export const PrefixList = ({
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     setPrefixStats({});
+  };
+
+  const handleSearch = async () => {
+    if (!searchValue.trim()) return;
+    
+    setSearchLoading(true);
+    try {
+      const response = await fetch(`/api/accounts/${searchValue.trim()}`);
+      const account = await response.json();
+      
+      if (account && account.prefix) {
+        router.push(`/prefix/${account.prefix}/${account.accountId}`);
+      } else {
+        // Если аккаунт не найден, можно показать сообщение об ошибке
+        message.error("Аккаунт не найден");
+      }
+    } catch (error) {
+      console.error("Error searching account:", error);
+      message.error("Ошибка при поиске аккаунта");
+    } finally {
+      setSearchLoading(false);
+    }
   };
 
   return (
@@ -358,7 +387,7 @@ export const PrefixList = ({
               padding: "16px 24px",
               display: "flex",
               justifyContent: "space-between",
-              alignItems: "center",
+              alignItems: "flex-start",
               borderBottom: "1px solid #f0f0f0"
             }}>
               <Space direction="vertical" size="small">
@@ -386,9 +415,20 @@ export const PrefixList = ({
                   </Space>
                 )}
               </Space>
-              <Button type="primary" icon={<PlusOutlined />} onClick={onAddClick}>
-                Добавить префикс
-              </Button>
+              <Space size="middle" align="center">
+                <Input.Search
+                  placeholder="ID аккаунта"
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  onSearch={handleSearch}
+                  style={{ width: 200 }}
+                  loading={searchLoading}
+                  enterButton={<SearchOutlined />}
+                />
+                <Button type="primary" icon={<PlusOutlined />} onClick={onAddClick}>
+                  Добавить префикс
+                </Button>
+              </Space>
             </div>
           </Card>
         }
