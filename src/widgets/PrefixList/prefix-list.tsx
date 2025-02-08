@@ -10,6 +10,7 @@ import {
   Pagination,
   Statistic,
   Input,
+  Tooltip,
 } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -365,14 +366,26 @@ export const PrefixList = ({
                     </Col>
                   </Row>
                 </div>
-                <Text
-                  style={{
-                    fontSize: "14px",
-                    color: "#595959",
-                  }}
+                <Tooltip 
+                  title={prefix.metadata.description} 
+                  mouseEnterDelay={0.5}
+                  placement="top"
+                  overlayStyle={{ maxWidth: '800px' }}
                 >
-                  {prefix.metadata.description}
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: "14px",
+                      color: "#595959",
+                      maxWidth: "600px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      display: "block"
+                    }}
+                  >
+                    {prefix.metadata.description}
+                  </Text>
+                </Tooltip>
               </div>
             )}
           </List.Item>

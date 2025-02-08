@@ -126,8 +126,8 @@ export const PrefixListContainer = () => {
 
       queryClient.invalidateQueries(["prefixes"]);
       setIsModalOpen(false);
-    } catch (error) {
-      message.error("Ошибка при создании префикса");
+    } catch (error: any) {
+      message.error(`Ошибка при создании префикса: ${error.message}`);
     }
   };
 

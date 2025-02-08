@@ -55,7 +55,10 @@ export async function getAccountsByPrefix(prefix: string): Promise<Account[]> {
 export async function createAccounts(accounts: string[], prefix: string) {
   const accountsCollection = await getAccountsCollection();
 
-  const accountsToInsert = accounts.map((account) => {
+  // Удаляем дубликаты из входящего массива
+  const uniqueAccounts = Array.from(new Set(accounts));
+
+  const accountsToInsert = uniqueAccounts.map((account) => {
     const [authKey, dcId] = account.split(":");
     const username = authKey.slice(0, 32);
 
@@ -69,11 +72,24 @@ export async function createAccounts(accounts: string[], prefix: string) {
     return data;
   });
 
-  if (accountsToInsert.length > 0) {
-    await accountsCollection.insertMany(accountsToInsert);
+  // Удаляем дубликаты по accountId
+  const uniqueAccountsToInsert = Array.from(
+    new Map(accountsToInsert.map(item => [item.accountId, item])).values()
+  );
+
+  if (uniqueAccountsToInsert.length > 0) {
+    const bulkOps = uniqueAccountsToInsert.map((account) => ({
+      updateOne: {
+        filter: { accountId: account.accountId },
+        update: { $setOnInsert: account },
+        upsert: true
+      }
+    }));
+
+    await accountsCollection.bulkWrite(bulkOps, { ordered: false });
   }
 
-  return accountsToInsert;
+  return uniqueAccountsToInsert;
 }
 
 export async function getAccountById(accountId: string) {
