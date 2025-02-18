@@ -258,6 +258,9 @@ export async function getStoppedAccountsByPrefix(
     .find(
       {
         prefix,
+        forceStop: true,
+        banned: true,
+        reason: 'manual-stopped'
       },
       {
         projection: {
@@ -269,57 +272,21 @@ export async function getStoppedAccountsByPrefix(
           dc3: 1,
           dc4: 1,
           dc5: 1,
-          parentAccountId: 1,
-          stable: 1,
-          banned: 1,
-          reason: 1,
-          spamBlockDate: 1,
-          forceStop: 1,
+          spamBlockDate: 1
         },
       }
     )
     .toArray();
 
-  // Группируем аккаунты по parentAccountId
-  const accountsMap = new Map<string, any>();
-
-  // Сначала добавляем все родительские аккаунты
-  accounts.forEach((account) => {
-    if (!account.parentAccountId && !accountsMap.has(account.accountId)) {
-      const dcField = account.dcId ? `dc${account.dcId}` : null;
-      accountsMap.set(account.accountId, {
-        accountId: account.accountId,
-        authKey: dcField ? account[dcField] : null,
-        dcId: Number(account.dcId),
-        spamBlockDate: account.spamBlockDate,
-        shouldInclude: false,
-      });
-    }
+  return accounts.map(account => {
+    const dcField = account.dcId ? `dc${account.dcId}` : null;
+    return {
+      accountId: account.accountId,
+      authKey: dcField ? account[dcField] : null,
+      dcId: Number(account.dcId),
+      spamBlockDate: account.spamBlockDate
+    };
   });
-
-  // Проверяем дочерние аккаунты
-  accounts.forEach((account) => {
-    if (account.parentAccountId) {
-      const parent = accountsMap.get(account.parentAccountId);
-      if (parent && account.banned && account.forceStop) {
-        parent.shouldInclude = true;
-        if (account.spamBlockDate) {
-          parent.spamBlockDate = account.spamBlockDate;
-        }
-      }
-    }
-  });
-
-  const result = Array.from(accountsMap.values())
-    .filter((account) => account.shouldInclude)
-    .map(({ accountId, authKey, dcId, spamBlockDate }) => ({
-      accountId,
-      authKey,
-      dcId,
-      spamBlockDate,
-    }));
-
-  return result;
 }
 
 export async function hasStableAccountsToStop(
@@ -344,6 +311,7 @@ export async function hasStoppedAccounts(prefix: string): Promise<boolean> {
     prefix,
     forceStop: true,
     banned: true,
+    reason: 'manual-stopped'
   });
 
   return count > 0;
