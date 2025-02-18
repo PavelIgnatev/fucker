@@ -22,6 +22,8 @@ interface Account {
   prevApiId?: string;
   nextApiId?: string;
   phone?: string;
+  spamBlockDate?: string;
+  forceStop?: boolean;
   [key: string]: any;
 }
 
@@ -29,6 +31,9 @@ const getAccountStatus = (account: Account) => {
   if (account.parentAccountId) {
     if (account.banned || account.reason) {
       return { color: "#ff4d4f", text: "Забанен" };
+    }
+    if (account.forceStop) {
+      return { color: "#ff4d4f", text: "Остановлен" };
     }
     if (account.stable) {
       return { color: "#52c41a", text: "Стабильный" };
@@ -123,6 +128,10 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
   const stableBannedCount = derivedAccounts.filter(
     (acc) => acc.stable && (acc.banned || acc.reason)
   ).length;
+
+  // Добавляем подсчет спамблоков
+  const stableAccounts = derivedAccounts.filter((acc) => acc.stable);
+  const spamBlockCount = stableAccounts.filter(acc => acc.spamBlockDate).length;
 
   const AccountItem = ({ account }: { account: Account }) => {
     const status = getAccountStatus(account);
@@ -267,7 +276,7 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
 
         {/* Стабильные аккаунты */}
         <div>
-          <h4>СТАБИЛЬНЫЕ АККАУНТЫ: {stableCount}</h4>
+          <h4>СТАБИЛЬНЫЕ АККАУНТЫ: {stableCount} (спамблоков: {spamBlockCount || 0})</h4>
           <div style={{ fontSize: "12px", marginBottom: "8px" }}>
             <div style={{ color: "#52c41a" }}>Активные: {stableCount - stableBannedCount}</div>
             <div style={{ color: "#ff4d4f" }}>Забанено: {stableBannedCount}</div>
@@ -276,7 +285,105 @@ export const LogsStats: React.FC<LogsStatsProps> = ({ prefixId, accountId }) => 
             {derivedAccounts
               .filter((acc) => acc.stable)
               .map((acc) => (
-                <AccountItem key={acc.accountId} account={acc} />
+                <div
+                  key={acc.accountId}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                    marginBottom: "4px",
+                  }}
+                >
+                  <Tooltip title="Перейти к логам аккаунта">
+                    <Tag
+                      style={{
+                        cursor: "pointer",
+                        backgroundColor: "#f5f5f5",
+                        color: "#262626",
+                        borderColor: "#8c8c8c",
+                        fontWeight: 500,
+                      }}
+                      onClick={() => handleAccountClick(acc.accountId)}
+                    >
+                      {acc.accountId}
+                    </Tag>
+                  </Tooltip>
+                  {acc.phone && (
+                    <Tag
+                      style={{
+                        backgroundColor: "#f5f5f5",
+                        color: "#595959",
+                        borderColor: "#d9d9d9",
+                        fontSize: "10px",
+                      }}
+                    >
+                      {acc.phone}
+                    </Tag>
+                  )}
+                  <span
+                    style={{
+                      fontSize: "10px",
+                      color: "#52c41a",
+                      backgroundColor: "#52c41a10",
+                      padding: "2px 6px",
+                      borderRadius: "4px",
+                    }}
+                  >
+                    Стабильный
+                  </span>
+                  {acc.spamBlockDate && (
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        color: "#ff4d4f",
+                        backgroundColor: "#ff4d4f10",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {acc.spamBlockDate === "INFINITY" ? "INFINITY" : new Date(acc.spamBlockDate).toLocaleString()}
+                    </span>
+                  )}
+                  {(acc.banned || acc.reason) && (
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        color: "#ff4d4f",
+                        backgroundColor: "#ff4d4f10",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {acc.reason || "Причина не указана"}
+                    </span>
+                  )}
+                  {acc.prevApiId && (
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        color: "#ff4d4f",
+                        backgroundColor: "#ff4d4f10",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {acc.prevApiId}
+                    </span>
+                  )}
+                  {acc.nextApiId && (
+                    <span
+                      style={{
+                        fontSize: "10px",
+                        color: "#52c41a",
+                        backgroundColor: "#52c41a10",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {acc.nextApiId}
+                    </span>
+                  )}
+                </div>
               ))}
           </div>
         </div>
