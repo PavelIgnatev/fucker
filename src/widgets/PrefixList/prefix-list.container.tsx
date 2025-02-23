@@ -27,7 +27,7 @@ interface ValidationResult {
   accounts?: ValidatedAccount[];
 }
 
-const ACCOUNTS_LIMIT = 5000;
+const ACCOUNTS_LIMIT = 20000;
 const ACCOUNT_FORMAT = /^[a-zA-Z0-9]+:[0-9]+$/;
 
 export const PrefixListContainer = () => {
@@ -56,7 +56,7 @@ export const PrefixListContainer = () => {
     if (accountsList.length > ACCOUNTS_LIMIT) {
       return {
         isValid: false,
-        message: "Превышен лимит в 5000 аккаунтов",
+        message: "Превышен лимит в 20000 аккаунтов",
         type: "error",
       };
     }
