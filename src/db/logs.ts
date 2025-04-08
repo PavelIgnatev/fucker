@@ -10,7 +10,7 @@ import { getAccountById } from "./accounts";
 import { cleanString } from "../helpers/cleanString";
 
 const getLogsCollection = async () => {
-  return (await logsDB()).collection("logs");
+  return (await logsDB()).collection("fucker_logs");
 };
 
 export const getUniquePrefixes = async () => {

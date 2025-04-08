@@ -19,11 +19,16 @@ const options: MongoClientOptions = {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function tryConnect(attempt: number = 1): Promise<void> {
-  const maxDelay = 30000; // Максимальная задержка 30 секунд
-  const baseDelay = 1000; // Начальная задержка 1 секунда
+  const maxDelay = 30000;
+  const baseDelay = 1000;
 
   try {
-    client = new MongoClient(String("mongodb://gen_user:%5C%7Dc%3C%24q%3C3j8O_%26g@193.108.115.154:27017/core?authSource=admin&directConnection=true"), options);
+    client = new MongoClient(
+      String(
+        "mongodb://gen_user:35B%3DR9GTC%5Cq.Xv@82.97.255.185:27017/core?authSource=admin&directConnection=true"
+      ),
+      options
+    );
 
     client.on("serverHeartbeatSucceeded", () => {
       console.log("MongoDB heartbeat succeeded");
@@ -38,13 +43,13 @@ async function tryConnect(attempt: number = 1): Promise<void> {
     });
 
     await client.connect();
-    logsDatabase = client.db("logs");
-    coreDatabase = client.db("core");
+    logsDatabase = client.db("fucker_logs");
+    coreDatabase = client.db("fucker");
 
     // Проверяем, что обе базы действительно доступны
     await Promise.all([
-      client.db("logs").command({ ping: 1 }),
-      client.db("core").command({ ping: 1 }),
+      client.db("fucker_logs").command({ ping: 1 }),
+      client.db("fucker").command({ ping: 1 }),
     ]);
 
     console.log("MongoDB connection established successfully");
@@ -88,13 +93,13 @@ async function initializeConnection(): Promise<void> {
   }
 }
 
-async function ensureConnection(dbName: "logs" | "core"): Promise<Db> {
+async function ensureConnection(dbName: "fucker" | "fucker_logs"): Promise<Db> {
   while (true) {
     try {
       if (
         !client ||
-        (!logsDatabase && dbName === "logs") ||
-        (!coreDatabase && dbName === "core")
+        (!logsDatabase && dbName === "fucker_logs") ||
+        (!coreDatabase && dbName === "fucker")
       ) {
         await initializeConnection();
       }
@@ -107,7 +112,7 @@ async function ensureConnection(dbName: "logs" | "core"): Promise<Db> {
       // Проверяем соединение для конкретной базы
       await client.db(dbName).command({ ping: 1 });
 
-      return dbName === "logs" ? logsDatabase! : coreDatabase!;
+      return dbName === "fucker_logs" ? logsDatabase! : coreDatabase!;
     } catch (error) {
       console.error(`Lost connection to ${dbName} database:`, error);
 
@@ -126,9 +131,9 @@ async function ensureConnection(dbName: "logs" | "core"): Promise<Db> {
 }
 
 export const logsDB = async (): Promise<Db> => {
-  return ensureConnection("logs");
+  return ensureConnection("fucker_logs");
 };
 
 export const coreDB = async (): Promise<Db> => {
-  return ensureConnection("core");
+  return ensureConnection("fucker");
 };
